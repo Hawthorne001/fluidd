@@ -35,7 +35,7 @@
   "main": "index.js",
   "dependencies": {
     "@ctrl/tinycolor": "^4.1.0",
-    "@fontsource/raleway": "^5.0.18",
+    "@fontsource/raleway": "^5.0.19",
     "@fontsource/roboto": "^5.0.13",
     "@irojs/iro-core": "^1.2.1",
     "@jaames/iro": "^5.5.2",
