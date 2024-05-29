@@ -57,7 +57,7 @@
     "panzoom": "^9.4.3",
     "qr-scanner": "^1.4.2",
     "qrcode.vue": "^1.7.0",
-    "semver": "^7.6.0",
+    "semver": "^7.6.1",
     "shlex": "^2.1.2",
     "sortablejs": "^1.15.2",
     "uuid": "^9.0.1",
