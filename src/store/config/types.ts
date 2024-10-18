@@ -3,6 +3,7 @@ import type { FileFilterType } from '../files/types'
 
 export interface ConfigState {
   [key: string]: any;
+  appReady: boolean;
   apiUrl: string;
   socketUrl: string;
   layoutMode: boolean;
@@ -40,7 +41,8 @@ export interface SpoolmanConfig {
   selectionDialogSortOrder: {
     key: string | null;
     desc: boolean | null;
-  }
+  },
+  remainingFilamentUnit: 'weight' | 'length'
 }
 
 export interface HostConfig {

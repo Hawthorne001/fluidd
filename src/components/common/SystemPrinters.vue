@@ -52,8 +52,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
-import type { InitConfig, InstanceConfig } from '@/store/config/types'
+import { Component, Mixins, Watch } from 'vue-property-decorator'
+import type { InstanceConfig } from '@/store/config/types'
 import StateMixin from '@/mixins/state'
 import { appInit } from '@/init'
 
@@ -69,10 +69,12 @@ export default class SystemPrinters extends Mixins(StateMixin) {
     return this.$store.getters['config/getInstances']
   }
 
-  mounted () {
-    // If we have no api's configured at all, open the dialog.
-    if (this.$store.state.config.apiUrl === '') {
-      this.instanceDialogOpen = true
+  @Watch('appReady')
+  onAppReady (value: boolean) {
+    if (value) {
+      if (this.$store.state.config.apiUrl === '') {
+        this.instanceDialogOpen = true
+      }
     }
   }
 
@@ -84,7 +86,7 @@ export default class SystemPrinters extends Mixins(StateMixin) {
     this.instanceDialogOpen = true
   }
 
-  activateInstance (instance: InstanceConfig) {
+  async activateInstance (instance: InstanceConfig) {
     // Close the drawer
     this.$emit('click')
     if (!instance.active) {
@@ -92,13 +94,12 @@ export default class SystemPrinters extends Mixins(StateMixin) {
       this.$socket.close()
 
       // Re-init the app.
-      appInit(instance, this.$store.state.config.hostConfig)
-        .then((config: InitConfig) => {
-          // Reconnect the socket with the new instance url.
-          if (config.apiConfig.socketUrl && config.apiConnected && config.apiAuthenticated) {
-            this.$socket.connect(config.apiConfig.socketUrl)
-          }
-        })
+      const config = await appInit(instance, this.$store.state.config.hostConfig)
+
+      // Reconnect the socket with the new instance url.
+      if (config.apiConfig.socketUrl && config.apiConnected && config.apiAuthenticated) {
+        this.$socket.connect(config.apiConfig.socketUrl)
+      }
     }
   }
 }

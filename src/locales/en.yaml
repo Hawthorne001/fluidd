@@ -76,6 +76,7 @@ app:
         hidden_files_folders: Filter hidden files and folders
         klipper_backup_files: Filter Klipper backup files
         moonraker_backup_files: Filter Moonraker backup files
+        moonraker_temporary_upload_files: Filter Moonraker temporary upload files
         rolled_log_files: Filter rolled log files
     label:
       dir_name: Directory name
@@ -110,7 +111,7 @@ app:
       items_count: '{count} item | {count} items'
       root_disabled: '{root} root is not available. Please check your logs.'
     url:
-      klipper_config: 'https://www.klipper3d.org/Config_Reference.html#%{hash}'
+      klipper_config: '%{klipperDomain}/Config_Reference.html#%{hash}'
       moonraker_config: 'https://moonraker.readthedocs.io/en/latest/configuration/#%{hash}'
       moonraker_telegram_bot_config: 'https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config#%{hash}'
       crowsnest_config: 'https://crowsnest.mainsail.xyz/configuration/%{hash}-section'
@@ -342,6 +343,8 @@ app:
       edit_category: Edit category
       add_category: Add category
       file_time: File
+      stepper_driver: >-
+        %{name} Driver
     msg:
       password_changed: Password changed
       wrong_password: Oops, something went wrong. Is your password correct?
@@ -354,6 +357,9 @@ app:
       pending_configuration_sections_deleted: The following sections are marked for deletion
       rolledover_logs: >-
         The following application logs have been rolled over: %{applications}
+      not_valid_fluidd_backup_file: Not a valid Fluidd backup file!
+      fluidd_settings_backup_failed: Failed to backup Fluidd settings!
+      fluidd_settings_restore_failed: Failed to restore Fluidd settings!
     simple_form:
       error:
         arrayofnums: Only numbers
@@ -493,6 +499,11 @@ app:
       standby: Standby
     title:
       printer_status: Printer Status
+      stepper_driver_overheating: Stepper driver '%{name}' is over-heating
+    msg:
+      possible_print_failure: This may lead to a failed print
+    url:
+      stepper_driver_overheating: '%{klipperDomain}/TMC_Drivers.html#tmc-reports-error-ot1overtemperror'
   setting:
     btn:
       add_camera: Add Camera
@@ -501,7 +512,9 @@ app:
       add_metric: Add Metric
       add_thermal_preset: Add Preset
       add_user: Add user
+      backup: Backup
       reset: Reset
+      restore: Restore
       select_theme: Select Theme
     camera_type_options:
       mjpegadaptive: MJPEG Adaptive
@@ -566,6 +579,7 @@ app:
       fill_color: Fill color
       fill_opacity: Fill opacity
       filter: Filter | Filters
+      fluidd_settings_in_moonraker_db: Fluidd settings in Moonraker database
       fps_target: FPS Target
       fps_idle_target: FPS Target when not in focus
       height: Height
@@ -859,6 +873,8 @@ app:
       material: Material
       remaining_weight: Remaining
       vendor: Vendor
+      weight: Weight
+      length: Length
     msg:
       no_spool: >-
         You haven't selected a spool.
@@ -901,6 +917,7 @@ app:
         Show a warning when the selected spool doesn't have enough filament left on it to finish the print
       warn_on_filament_type_mismatch: >-
         Show a warning when the spool's filament type and the one selected in the slicer don't match
+      remaining_filament_unit: Show remaining filament as
   sensors:
     title:
       sensors: Sensors

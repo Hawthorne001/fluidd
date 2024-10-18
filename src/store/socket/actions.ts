@@ -28,13 +28,13 @@ export const actions: ActionTree<SocketState, RootState> = {
   /**
     * Fired when the socket opens.
     */
-  async onSocketOpen ({ commit, rootState }, payload) {
+  async onSocketOpen ({ commit }, payload) {
     commit('setSocketOpen', payload)
     if (payload === true) {
       SocketActions.serverInfo()
       SocketActions.identify({
         client_name: Globals.APP_NAME,
-        version: `${rootState.version.fluidd.version || '0.0.0'}-${rootState.version.fluidd.hash || 'unknown'}`.trim(),
+        version: `${import.meta.env.VERSION || '0.0.0'}-${import.meta.env.HASH || 'unknown'}`.trim(),
         type: 'web',
         url: Globals.GITHUB_REPO
       })
@@ -145,10 +145,9 @@ export const actions: ActionTree<SocketState, RootState> = {
    */
 
   async notifyStatusUpdate ({ state, commit, dispatch }, payload) {
-    dispatch('printer/onNotifyStatusUpdate', payload, { root: true })
-      .then(() => {
-        if (!state.ready) commit('setSocketReadyState', true)
-      })
+    await dispatch('printer/onNotifyStatusUpdate', payload, { root: true })
+
+    if (!state.ready) commit('setSocketReadyState', true)
   },
 
   async notifyGcodeResponse ({ dispatch }, payload) {

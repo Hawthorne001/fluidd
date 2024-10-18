@@ -15,7 +15,7 @@
           :key="peripheralGroup.type"
         >
           <div>
-            {{ $filters.startCase(peripheralGroup.type) }}
+            {{ $filters.prettyCase(peripheralGroup.type) }}
             <v-chip
               small
               link
@@ -85,7 +85,7 @@
               <v-col>
                 <v-card outlined>
                   <v-card-title>{{ device.device_name }}</v-card-title>
-                  <v-card-subtitle>{{ $filters.startCase(device.device_type) }}</v-card-subtitle>
+                  <v-card-subtitle>{{ $filters.prettyCase(device.device_type) }}</v-card-subtitle>
 
                   <v-card-text>
                     <v-row>
@@ -94,6 +94,7 @@
                           :value="device.device_path"
                           label="device_path"
                           outlined
+                          persistent-placeholder
                           dense
                           readonly
                           hide-details
@@ -107,6 +108,7 @@
                           :value="device.path_by_id"
                           label="path_by_id"
                           outlined
+                          persistent-placeholder
                           dense
                           readonly
                           hide-details
@@ -120,6 +122,7 @@
                           :value="device.path_by_hardware"
                           label="path_by_hardware"
                           outlined
+                          persistent-placeholder
                           dense
                           readonly
                           hide-details
@@ -287,6 +290,7 @@
                           :value="canUuid.uuid"
                           :label="canUuid.application"
                           outlined
+                          persistent-placeholder
                           dense
                           readonly
                           hide-details

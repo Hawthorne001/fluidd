@@ -9,7 +9,7 @@ app:
       remove_profile: Verwijder %{name} profiel
       scale: Kleurschaal
       wireframe: Draadframe
-      base: base
+      base: basis
       active: actief
     msg:
       hint: >-
@@ -106,6 +106,7 @@ app:
       command_palette: Command Palette
       duplicate_file: Dupliceer Bestand
       duplicate_dir: Dupliceer Directory
+      devices: Apparaten
     tooltip:
       low_on_space: Weinig geheugen over op de schijf
       root_disabled: '{root} is niet beschikbaar. Controleer je logs.'
@@ -117,7 +118,7 @@ app:
     url:
       moonraker_telegram_bot_config: https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config#%{hash}
       moonraker_config: https://moonraker.readthedocs.io/en/latest/configuration/#%{hash}
-      klipper_config: https://www.klipper3d.org/Config_Reference.html#%{hash}
+      klipper_config: '%{klipperDomain}/Config_Reference.html#%{hash}'
       crowsnest_config: https://crowsnest.mainsail.xyz/configuration/%{hash}-section
   gcode:
     btn:
@@ -224,6 +225,9 @@ app:
       recover: Herstel
       multiply: Vermenigvuldig
       job_queue: Job Wachtrij
+      socket_reconnect: Verbind opnieuw
+      copied: Gekopieerd
+      copy: Kopieer
     error:
       app_setup_link: >-
         Fluidd opstart vereisten kan je <a target="_blank" href="%{url}">hier</a>
@@ -333,6 +337,12 @@ app:
       user_managed_source: Gebruiker beheerd door %{source} authenticatie
       range: Bereik
       synced_extruder: Gesynchroniseerde Extruder
+      stepper_enabled: Stappenmotor ingeschakeld
+      screw_name: Schroef naam
+      unknown: Onbekend
+      screw_index: Schroef index
+      screw_number: Schroef %{index}
+      version_sort: Versie sorteer
     msg:
       password_changed: Wachtwoord aangepast
       wrong_password: Oeps! Er is iets fout gegaan, klopt je wachtwoord wel?
@@ -344,6 +354,9 @@ app:
         om te verwijderen
       needs_refresh: Nieuwe content beschikbaar, klik op de <b>Herladen</b> knop om
         te updaten.
+      not_valid_fluidd_backup_file: Niet een geldig Fluidd backup bestand!
+      fluidd_settings_backup_failed: Backup Fluidd instellingen mislukt!
+      fluidd_settings_restore_failed: Herstellen Fluidd instellingen mislukt!
     simple_form:
       error:
         arrayofnums: Alleen nummers
@@ -441,6 +454,8 @@ app:
       add_chart: Voeg Grafiek Toe
       not_found: 404 Niet Gevonden
       edit_chart: Bewerk Grafiek
+      job_queue: Opdrachten wachtrij
+      diagnostics: Diagnostiek
     tooltip:
       estop: Noodstop
       reload_klipper: Herlaad de klipper configuratie.
@@ -467,6 +482,8 @@ app:
       cancelled: Geannuleerd
     title:
       printer_status: Printer Status
+    msg:
+      possible_print_failure: Dit kan een mislukte print veroorzaken
   setting:
     btn:
       add_camera: Camera toevoegen
@@ -476,6 +493,8 @@ app:
       select_theme: Selecteer Theme
       add_filter: Filter Toevoegen
       add_category: Categorie Toevoegen
+      backup: Backup
+      restore: Herstellen
     camera_type_options:
       mjpegadaptive: MJPEG Adaptive
       mjpegstream: MJPEG Stream
@@ -574,6 +593,9 @@ app:
       dashed: Gestreept
       camera_fullscreen_action:
         title: Volledig scherm actie
+      fluidd_settings_in_moonraker_db: Fluidd instellingen in Moonraker database
+      print_progress_calculation: Print Voortgang calculatie
+      axes: Assen
     timer_options:
       duration: Alleen tijdsduur
       filament: Filamentschatting
@@ -768,3 +790,6 @@ app:
       confirm_stats: Weet je het zeker? Dit zal alle statistieken wissen.
       confirm: Weet je het zeker? Dit zal alle geschiedenis en printer statistieken
         wissen
+  keyboard_shortcuts:
+    label:
+      pause: Pauze

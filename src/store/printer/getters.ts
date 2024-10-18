@@ -7,6 +7,8 @@ import getKlipperType from '@/util/get-klipper-type'
 import i18n from '@/plugins/i18n'
 import type { GcodeHelp } from '../console/types'
 import type { ServerInfo } from '../server/types'
+import { Globals } from '@/globals'
+import isKeyOf from '@/util/is-key-of'
 
 export const getters: GetterTree<PrinterState, RootState> = {
 
@@ -37,7 +39,6 @@ export const getters: GetterTree<PrinterState, RootState> = {
   },
 
   getKlippyStateMessage: (state, getters, rootState, rootGetters): string => {
-    const regex = /(?:\r\n|\r|\n)/g
     // If there's absolutely no connection to klipper, then
     // say so.
     const serverInfo = rootGetters['server/getInfo'] as ServerInfo
@@ -52,15 +53,28 @@ export const getters: GetterTree<PrinterState, RootState> = {
       state.printer.info.state_message &&
       state.printer.info.state_message !== ''
     ) {
-      return state.printer.info.state_message.trim().replace(regex, '<br />')
+      return state.printer.info.state_message.trim().replace(/\r\n|\r|\n/g, '<br />')
     }
     if (
       state.printer.webhooks.state_message &&
       state.printer.webhooks.state_message !== ''
     ) {
-      return state.printer.webhooks.state_message.trim().replace(regex, '<br />')
+      return state.printer.webhooks.state_message.trim().replace(/\r\n|\r|\n/g, '<br />')
     }
     return 'Unknown'
+  },
+
+  getKlippyApp: (state) => {
+    const app = state.printer.info.app?.toLowerCase()
+
+    const klippyApp = isKeyOf(app, Globals.SUPPORTED_SERVICES.klipper)
+      ? app
+      : 'klipper'
+
+    return {
+      name: klippyApp,
+      ...Globals.SUPPORTED_SERVICES.klipper[klippyApp]
+    }
   },
 
   /**
@@ -369,7 +383,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
 
       steppers.push({
         name,
-        prettyName: Vue.$filters.startCase(name),
+        prettyName: Vue.$filters.prettyCase(name),
         key: item,
         enabled: state.printer.stepper_enable?.steppers[item],
         ...e,
@@ -410,6 +424,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
         const sensor = get(state.printer, item, undefined)
         sensors.push({
           name,
+          prettyName: Vue.$filters.prettyCase(name),
           ...sensor
         })
       }
@@ -482,7 +497,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
             : e
 
           const color = Vue.$colorset.next(getKlipperType(e), e)
-          const prettyName = Vue.$filters.startCase(name)
+          const prettyName = Vue.$filters.prettyCase(name)
 
           r.push({
             ...heater,
@@ -505,7 +520,9 @@ export const getters: GetterTree<PrinterState, RootState> = {
     return getters.getOutputs([
       'led',
       'neopixel',
-      'dotstar'
+      'dotstar',
+      'pca9533',
+      'pca9632'
     ])
   },
 
@@ -584,7 +601,9 @@ export const getters: GetterTree<PrinterState, RootState> = {
     const leds = [
       'led',
       'neopixel',
-      'dotstar'
+      'dotstar',
+      'pca9533',
+      'pca9632'
     ]
 
     // Are they controllable?
@@ -596,7 +615,9 @@ export const getters: GetterTree<PrinterState, RootState> = {
       'pwm_cycle_time',
       'led',
       'neopixel',
-      'dotstar'
+      'dotstar',
+      'pca9533',
+      'pca9632'
     ]
 
     // Should we apply a color?
@@ -615,7 +636,9 @@ export const getters: GetterTree<PrinterState, RootState> = {
       'fan_generic',
       'led',
       'neopixel',
-      'dotstar'
+      'dotstar',
+      'pca9533',
+      'pca9632'
     ]
 
     const supportedTypes = (filter && filter.length)
@@ -634,7 +657,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
       ) {
         const prettyName = name === 'fan'
           ? 'Part Fan' // If we know its the part fan.
-          : Vue.$filters.startCase(name)
+          : Vue.$filters.prettyCase(name)
 
         const color = (applyColor.includes(type))
           ? Vue.$colorset.next(getKlipperType(pin), pin)
@@ -689,14 +712,25 @@ export const getters: GetterTree<PrinterState, RootState> = {
       'tmc2240',
       'z_thermal_adjust'
     ]
+    const supportedDrivers = [
+      'tmc2240'
+    ]
 
     const sensors = Object.keys(state.printer)
       .reduce((groups, item) => {
         const [type, nameFromSplit] = item.split(' ', 2)
+        const name = nameFromSplit ?? item
 
-        if (supportedSensors.includes(type)) {
-          const name = nameFromSplit ?? item
-          const prettyName = Vue.$filters.startCase(name)
+        if (supportedSensors.includes(type) && !name.startsWith('_')) {
+          const prettyName = supportedDrivers.includes(type)
+            ? i18n.t('app.general.label.stepper_driver',
+              {
+                name:
+                  name.startsWith('stepper_')
+                    ? name.substring(8).toUpperCase()
+                    : Vue.$filters.prettyCase(name)
+              })
+            : Vue.$filters.prettyCase(name)
           const color = Vue.$colorset.next(getKlipperType(item), item)
           const config = getters.getPrinterSettings(item)
 
@@ -764,19 +798,11 @@ export const getters: GetterTree<PrinterState, RootState> = {
       ]
     ]
 
-    const filterByPrefix = [
-      'temperature_fan'
-    ]
-
     const printerKeys = Object.keys(state.printer)
 
     const sensors = keyGroups.flatMap(keyGroup => {
       const keyGroupRegExpArray = keyGroup
-        .map(x => new RegExp(
-          filterByPrefix.includes(x)
-            ? `^${x}(?! _)`
-            : `^${x}`)
-        )
+        .map(x => new RegExp(`^${x}(?! _)`))
 
       return printerKeys
         .filter(key => keyGroupRegExpArray.some(x => x.test(key)))
@@ -806,7 +832,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
 
       const fine = config[`screw${index}_fine_adjust`]
       const name = config[`screw${index}_name`]
-      const prettyName = Vue.$filters.startCase(name || i18n.t('app.general.label.screw_number', { index: index + 1 }))
+      const prettyName = Vue.$filters.prettyCase(name || i18n.t('app.general.label.screw_number', { index: index + 1 }))
 
       screws.push({
         key,
@@ -837,7 +863,7 @@ export const getters: GetterTree<PrinterState, RootState> = {
 
       const coords = config[key]
       const name = config[`${key}_name`]
-      const prettyName = Vue.$filters.startCase(name || i18n.t('app.general.label.screw_number', { index: index + 1 }))
+      const prettyName = Vue.$filters.prettyCase(name || i18n.t('app.general.label.screw_number', { index: index + 1 }))
       const [hours, minutes] = result.adjust
         .split(':')
         .map(Number)

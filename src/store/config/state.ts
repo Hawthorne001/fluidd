@@ -3,6 +3,7 @@ import { Globals } from '@/globals'
 
 export const defaultState = (): ConfigState => {
   return {
+    appReady: false,
     apiUrl: '',
     socketUrl: '',
     layoutMode: false,
@@ -162,7 +163,8 @@ export const defaultState = (): ConfigState => {
         selectionDialogSortOrder: {
           key: 'last_used',
           desc: false
-        }
+        },
+        remainingFilamentUnit: 'weight'
       }
     }
   }

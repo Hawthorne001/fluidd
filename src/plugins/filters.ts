@@ -1,6 +1,6 @@
 import _Vue from 'vue'
 import VueRouter from 'vue-router'
-import { camelCase, startCase, capitalize, isFinite } from 'lodash-es'
+import { camelCase, startCase, capitalize, isFinite, upperFirst } from 'lodash-es'
 import type { ApiConfig, TextSortOrder } from '@/store/config/types'
 import { TinyColor } from '@ctrl/tinycolor'
 import { DateFormats, Globals, TimeFormats, Waits, type DateTimeFormat } from '@/globals'
@@ -211,6 +211,19 @@ export const Filters = {
     return date.getFullYear() === today.getFullYear()
   },
 
+  upperFirst: (value: string) => {
+    return upperFirst(value)
+  },
+
+  prettyCase: (value: string) => {
+    return value
+      .replace(/_/g, ' ')
+      .split(' ')
+      .filter(x => x)
+      .map(Filters.upperFirst)
+      .join(' ')
+  },
+
   /**
    * Formats a string into camel case.
    */
@@ -267,7 +280,11 @@ export const Filters = {
   /**
    * Formats a number representing mm to human readable distance.
    */
-  getReadableLengthString (lengthInMm: number, showMicrons = false) {
+  getReadableLengthString (lengthInMm: number | undefined | null, showMicrons = false) {
+    if (lengthInMm === undefined || lengthInMm === null) {
+      return '-'
+    }
+
     if (lengthInMm >= 1000) return (lengthInMm / 1000).toFixed(2) + ' m'
     if (lengthInMm > 100) return (lengthInMm / 10).toFixed(1) + ' cm'
     if (lengthInMm < 0.1 && showMicrons) return (lengthInMm * 1000).toFixed(0) + ' μm'
@@ -424,6 +441,14 @@ export const Filters = {
    */
   routeTo (router: VueRouter, path: string) {
     if (router.currentRoute.fullPath !== path) router.push(path)
+  },
+
+  /**
+   * Converts a given weight (in grams) to its corresponding length (in mm)
+   */
+  convertFilamentWeightToLength (weight: number, density: number, diameter: number) {
+    // l[mm] = m[g]/D[g/cm³]/A[mm²]*(1000mm³/cm³)
+    return weight / density / (Math.PI * (diameter / 2) ** 2) * 1000
   }
 }
 
@@ -445,10 +470,18 @@ export const Rules = {
   },
 
   numberGreaterThanOrEqualOrZero (min: number) {
+    if (min === 0) {
+      return Rules.numberGreaterThanOrEqual(0)
+    }
+
     return (v: number) => +v === 0 || v >= min || i18n.t('app.general.simple_form.error.min_or_0', { min })
   },
 
   numberGreaterThanOrZero (min: number) {
+    if (min === 0) {
+      return Rules.numberGreaterThan(0)
+    }
+
     return (v: number) => +v === 0 || v > min || i18n.t('app.general.simple_form.error.min_or_0', { min: `> ${min}` })
   },
 
