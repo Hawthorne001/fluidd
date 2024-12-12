@@ -61,7 +61,7 @@
     "shlex": "^2.1.2",
     "sortablejs": "^1.15.2",
     "uuid": "^9.0.1",
-    "vue": "^2.7.16",
+    "vue": "^3.0.0",
     "vue-class-component": "^7.2.6",
     "vue-echarts": "^6.7.1",
     "vue-i18n": "^8.28.2",
